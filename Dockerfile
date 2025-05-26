@@ -8,6 +8,11 @@ FROM alpine/git:2.43.0 as download
 RUN apk add --no-cache wget && \
     wget -q -O /model.safetensors https://huggingface.co/CuteBlueEyed/GeminiX/resolve/main/Gemini_ILMixV5.safetensors
 
+    wget -q -O /models/LoRA/Fenny_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Fenny_GMIL_TAV1.safetensors
+    wget -q -O /models/LoRA/Anna_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Anna_GMIL_TAV1.safetensors
+    wget -q -O /models/LoRA/KURA_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/KURA_GMIL_TAV1.safetensors
+
+
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
 # ---------------------------------------------------------------------------- #
