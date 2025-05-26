@@ -3,21 +3,17 @@
 # ---------------------------------------------------------------------------- #
 FROM alpine/git:2.43.0 as download
 
-# NOTE: CivitAI usually requires an API token, so you need to add it in the header
-#       of the wget command if you're using a model from CivitAI.
+# 創建必要的目錄
+RUN mkdir -p /models/LoRA
+
+# 下載主模型
 RUN apk add --no-cache wget && \
     wget -q -O /model.safetensors https://huggingface.co/CuteBlueEyed/GeminiX/resolve/main/Gemini_ILMixV5.safetensors
 
-RUN apk add --no-cache wget && \
-    wget -q -O /models/LoRA/Fenny_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Fenny_GMIL_TAV1.safetensors
-	
-RUN apk add --no-cache wget && \	
-    wget -q -O /models/LoRA/Anna_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Anna_GMIL_TAV1.safetensors
-	
-RUN apk add --no-cache wget && \	
+# 下載 LoRA 模型
+RUN wget -q -O /models/LoRA/Fenny_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Fenny_GMIL_TAV1.safetensors && \
+    wget -q -O /models/LoRA/Anna_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/Anna_GMIL_TAV1.safetensors && \
     wget -q -O /models/LoRA/KURA_GMIL_TAV1.safetensors https://huggingface.co/CuteBlueEyed/LoRAForGeminiX_IL/resolve/main/KURA_GMIL_TAV1.safetensors
-
-
 
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
@@ -46,7 +42,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements_versions.txt && \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
-COPY --from=download /model.safetensors /model.safetensors
+# 複製模型檔案
+COPY --from=download /model.safetensors /stable-diffusion-webui/models/Stable-diffusion/
+COPY --from=download /models/LoRA /stable-diffusion-webui/models/Lora/
 
 # install dependencies
 COPY requirements.txt .
